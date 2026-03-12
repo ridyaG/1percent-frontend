@@ -5,7 +5,6 @@ import { postsApi } from '../../api/posts';
 import { useUIStore } from '../../store/uiStore';
 import toast from 'react-hot-toast';
 import { useAuthStore } from '../../store/authStore';
-import type { Post } from '../../types/post'; 
 
 const POST_TYPES = [
   { value: 'daily_win', label: '🏆 Daily Win' },
