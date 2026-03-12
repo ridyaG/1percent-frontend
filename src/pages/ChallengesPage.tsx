@@ -269,7 +269,14 @@ function ChallengeDetail({ id, onBack }: { id: string; onBack: () => void }) {
 
 // ── Challenge Card ─────────────────────────────────────────────────
 function ChallengeCard({ challenge, onClick }: { challenge: Challenge; onClick: () => void }) {
-  const daysLeft = Math.ceil((new Date(challenge.endDate).getTime() - Date.now()) / 86400000);
+  const today = new Date();
+
+  const daysLeft = Math.max(
+    0,
+    Math.ceil(
+      (new Date(challenge.endDate).getTime() - today.getTime()) / 86400000
+    )
+  );
 
   return (
     <div onClick={onClick}
