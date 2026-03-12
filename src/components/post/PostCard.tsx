@@ -1,3 +1,5 @@
+import { useState } from 'react';
+import CommentSection from './CommentSection';
 import { Heart, MessageCircle, Share2, Bookmark } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 import { useLike } from '../../hooks/useLike';
@@ -5,12 +7,14 @@ import StreakBadge from '../profile/StreakBadge';
 import type { Post } from '../../types/post';
 import { getDefaultAvatar } from '../../lib/utils';
 
+
 const POST_TYPES: Record<string, { label: string; icon: string }> = {
   daily_win:  { label: 'Daily Win', icon: '🏆' },
   milestone:  { label: 'Milestone', icon: '🎯' },
   reflection: { label: 'Reflection', icon: '💭' },
   challenge:  { label: 'Challenge', icon: '⚡' },
 };
+const [showComments, setShowComments] = useState(false);
 
 export default function PostCard({ post }: { post: Post }) {
   const { mutate: toggleLike } = useLike();
@@ -71,7 +75,9 @@ export default function PostCard({ post }: { post: Post }) {
           <Heart size={18} fill={post.liked ? 'currentColor' : 'none'} />
           {likes}
         </button>
-        <button className="flex items-center gap-1.5 hover:text-blue-400">
+        <button
+          onClick={() => setShowComments(v => !v)}
+          className={`flex items-center gap-1.5 hover:text-blue-400 ${showComments ? 'text-blue-400' : ''}`}>
           <MessageCircle size={18} /> {comments}
         </button>
         <button className="flex items-center gap-1.5 hover:text-green-400">
@@ -80,7 +86,9 @@ export default function PostCard({ post }: { post: Post }) {
         <button className="ml-auto hover:text-yellow-400">
           <Bookmark size={18} />
         </button>
+        
       </div>
+      {showComments && <CommentSection postId={post.id} />}
     </div>
   );
 }

@@ -19,7 +19,7 @@ export const postsApi = {
   getComments: (postId: string) =>
     api.get(`/posts/${postId}/comments`).then(r => r.data.data),
 
-  addComment: (postId: string, data: { content: string; parentId?: string }) =>
-    api.post(`/posts/${postId}/comments`, data).then(r => r.data.data),
+  addComment: (postId: string, content: string) =>
+    api.post(`/posts/${postId}/comments`, { content }).then(r => r.data.data),
 };
  
