@@ -7,17 +7,16 @@ import StreakBadge from '../profile/StreakBadge';
 import type { Post } from '../../types/post';
 import { getDefaultAvatar } from '../../lib/utils';
 
-
 const POST_TYPES: Record<string, { label: string; icon: string }> = {
   daily_win:  { label: 'Daily Win', icon: '🏆' },
   milestone:  { label: 'Milestone', icon: '🎯' },
   reflection: { label: 'Reflection', icon: '💭' },
   challenge:  { label: 'Challenge', icon: '⚡' },
 };
-const [showComments, setShowComments] = useState(false);
 
 export default function PostCard({ post }: { post: Post }) {
   const { mutate: toggleLike } = useLike();
+  const [showComments, setShowComments] = useState(false); // ← moved here
   const author = post.author;
   const type = POST_TYPES[post.postType] || POST_TYPES.daily_win;
   const likes = post._count?.likes ?? 0;
@@ -28,7 +27,6 @@ export default function PostCard({ post }: { post: Post }) {
     toggleLike({ postId: post.id, liked: post.liked ?? false });
   };
 
-  // Linkify hashtags
   const content = post.content.replace(
     /#(\w+)/g,
     '<span class="text-[#FF5C00] cursor-pointer hover:underline">#$1</span>'
@@ -37,16 +35,15 @@ export default function PostCard({ post }: { post: Post }) {
   return (
     <div className="bg-[#111] border border-white/5 rounded-2xl p-5 mb-3
                     hover:border-white/10 transition-colors">
-      {/* Header */}
       <div className="flex items-center gap-3 mb-3">
         <img
-            src={author.avatarUrl || getDefaultAvatar(author.username)}
-            className="w-10 h-10 rounded-full bg-white/5"
-            alt={author.displayName}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = getDefaultAvatar(author.username);
-            }}
-         />
+          src={author.avatarUrl || getDefaultAvatar(author.username)}
+          className="w-10 h-10 rounded-full bg-white/5"
+          alt={author.displayName}
+          onError={(e) => {
+            (e.target as HTMLImageElement).src = getDefaultAvatar(author.username);
+          }}
+        />
         <div className="flex-1">
           <div className="font-semibold text-sm">
             {author.displayName}
@@ -57,17 +54,14 @@ export default function PostCard({ post }: { post: Post }) {
         <StreakBadge streak={author.currentStreak || 0} />
       </div>
 
-      {/* Post type tag */}
       <span className="inline-block text-xs font-semibold px-2.5 py-1 rounded-full
                        bg-[#FF5C00]/10 text-[#FF5C00] mb-3">
         {type.icon} {type.label}
       </span>
 
-      {/* Content */}
       <p className="text-[15px] leading-relaxed mb-4"
          dangerouslySetInnerHTML={{ __html: content }} />
 
-      {/* Actions */}
       <div className="flex items-center gap-6 text-gray-400 text-sm">
         <button onClick={handleLike}
           className={`flex items-center gap-1.5 hover:text-pink-500
@@ -86,8 +80,8 @@ export default function PostCard({ post }: { post: Post }) {
         <button className="ml-auto hover:text-yellow-400">
           <Bookmark size={18} />
         </button>
-        
       </div>
+
       {showComments && <CommentSection postId={post.id} />}
     </div>
   );
