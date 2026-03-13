@@ -1,56 +1,137 @@
-import { Menu, Bell } from 'lucide-react';
+import { Menu, Bell, Plus } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
 import { getDefaultAvatar } from '../../lib/utils';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useIsMobile } from '../../hooks/useMediaQuery';
+
+const PAGE_TITLES: Record<string, string> = {
+  '/':              'Feed',
+  '/explore':       'Explore',
+  '/streaks':       'Streaks',
+  '/challenges':    'Challenges',
+  '/notifications': 'Notifications',
+  '/profile':       'Profile',
+};
 
 export default function Topbar() {
   const toggleSidebar = useUIStore((s) => s.toggleSidebar);
-  const user = useAuthStore((s) => s.user);
-  const navigate = useNavigate();
-  const avatar = user?.avatarUrl || getDefaultAvatar(user?.username || 'user');
+  const openCompose   = useUIStore((s) => s.openCompose);
+  const user          = useAuthStore((s) => s.user);
+  const navigate      = useNavigate();
+  const location      = useLocation();
+  const isMobile      = useIsMobile();
+
+  const avatar     = user?.avatarUrl || getDefaultAvatar(user?.username || 'user');
+  const pageTitle  = PAGE_TITLES[location.pathname] ?? '1% Better';
 
   return (
     <header
-      className="fixed top-0 right-0 left-0 md:left-[220px] h-[60px] backdrop-blur-md flex items-center justify-between px-4 z-30"
+      className="fixed top-0 right-0 left-0 md:left-[220px] z-30"
       style={{
-        background: 'color-mix(in srgb, var(--color-bg) 80%, transparent)',
-        borderBottom: '1px solid var(--color-border)',
+        height: 'var(--topbar-height)',
+        background: 'color-mix(in srgb, var(--color-bg) 72%, transparent)',
+        backdropFilter: 'blur(18px)',
+        WebkitBackdropFilter: 'blur(18px)',
+        borderBottom: '1px solid rgba(169, 190, 255, 0.08)',
+        boxShadow: '0 10px 28px rgba(2, 6, 23, 0.18)',
       }}
     >
-      <div className="flex items-center gap-3">
-        <button
-          onClick={toggleSidebar}
-          className="md:hidden transition-colors"
-          style={{ color: 'var(--color-text-muted)' }}
-        >
-          <Menu size={22} />
-        </button>
-        <h1 className="text-lg font-bold tracking-wide" style={{ color: 'var(--color-text)' }}>
-          1PERCENT
-        </h1>
-      </div>
+      <div className="mx-auto flex h-full w-full max-w-[1180px] items-center justify-between gap-3 px-3 sm:px-5">
+        <div className="flex min-w-0 items-center gap-3">
+          <button
+            onClick={toggleSidebar}
+            className="md:hidden flex items-center justify-center rounded-xl transition-colors"
+            style={{
+              width: 'var(--tap-target)',
+              height: 'var(--tap-target)',
+              color: 'var(--color-text)',
+              background: 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--color-border)',
+            }}
+            aria-label="Open menu"
+          >
+            <Menu size={20} />
+          </button>
 
-      <div className="flex items-center gap-3">
-        <button
-          onClick={() => navigate('/notifications')}
-          className="relative transition-colors"
-          style={{ color: 'var(--color-text-muted)' }}
-        >
-          <Bell size={20} />
-          <span
-            className="absolute -top-1 -right-1 w-2 h-2 rounded-full"
-            style={{ background: 'var(--color-accent)' }}
-          />
-        </button>
-        <button onClick={() => navigate('/profile')}>
-          <img
-            src={avatar}
-            className="w-8 h-8 rounded-full"
-            style={{ border: '1px solid var(--color-border)' }}
-            alt=""
-          />
-        </button>
+          <div className="min-w-0">
+            <div className="hidden md:block text-[11px] font-semibold uppercase tracking-[0.24em]" style={{ color: 'var(--color-secondary)' }}>
+              1% Better
+            </div>
+            <h1
+              className="truncate text-lg font-bold sm:text-xl"
+              style={{ fontFamily: "'Syne', sans-serif", color: 'var(--color-text)' }}
+            >
+              {pageTitle}
+            </h1>
+          </div>
+        </div>
+
+        <div className="flex items-center gap-2 sm:gap-3">
+          {!isMobile && (
+            <button
+              onClick={openCompose}
+              className="btn btn-primary hidden sm:inline-flex"
+              aria-label="Create post"
+            >
+              <Plus size={16} />
+              New post
+            </button>
+          )}
+
+          {isMobile && (
+            <button
+              onClick={openCompose}
+              className="flex items-center justify-center rounded-xl"
+              style={{
+                width: 'var(--tap-target)',
+                height: 'var(--tap-target)',
+                background: 'var(--gradient-brand)',
+                color: '#fff',
+                boxShadow: 'var(--shadow-accent)',
+              }}
+              aria-label="New post"
+            >
+              <Plus size={18} />
+            </button>
+          )}
+
+          <button
+            onClick={() => navigate('/notifications')}
+            className="relative flex items-center justify-center rounded-xl transition-colors"
+            style={{
+              width: 'var(--tap-target)',
+              height: 'var(--tap-target)',
+              color: 'var(--color-text)',
+              background: location.pathname === '/notifications' ? 'var(--color-accent-bg)' : 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--color-border)',
+            }}
+            aria-label="Notifications"
+          >
+            <Bell size={18} />
+            <span
+              className="absolute right-2.5 top-2.5 h-2.5 w-2.5 rounded-full border-2"
+              style={{
+                background: 'var(--color-accent)',
+                borderColor: 'var(--color-bg)',
+              }}
+            />
+          </button>
+
+          <button
+            onClick={() => navigate('/profile')}
+            className="overflow-hidden rounded-full transition-all"
+            style={{
+              width: 'var(--tap-target)',
+              height: 'var(--tap-target)',
+              border: location.pathname === '/profile' ? '2px solid var(--color-accent)' : '2px solid var(--color-border)',
+              boxShadow: location.pathname === '/profile' ? '0 0 0 4px rgba(255,122,24,0.12)' : 'none',
+            }}
+            aria-label="Profile"
+          >
+            <img src={avatar} className="h-full w-full object-cover" alt="" />
+          </button>
+        </div>
       </div>
     </header>
   );

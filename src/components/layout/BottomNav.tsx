@@ -2,34 +2,60 @@ import { NavLink } from 'react-router-dom';
 import { Home, Search, Flame, Bell, User } from 'lucide-react';
 
 const items = [
-  { to: '/', icon: Home },
-  { to: '/explore', icon: Search },
-  { to: '/streaks', icon: Flame },
-  { to: '/notifications', icon: Bell },
-  { to: '/profile', icon: User },
+  { to: '/',              icon: Home,  label: 'Feed' },
+  { to: '/explore',       icon: Search,label: 'Explore' },
+  { to: '/streaks',       icon: Flame, label: 'Streaks' },
+  { to: '/notifications', icon: Bell,  label: 'Alerts' },
+  { to: '/profile',       icon: User,  label: 'Profile' },
 ];
 
 export default function BottomNav() {
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 flex justify-around py-2 z-50 md:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 md:hidden"
       style={{
-        background: 'var(--color-surface)',
-        borderTop: '1px solid var(--color-border)',
+        background: 'color-mix(in srgb, var(--color-bg) 74%, transparent)',
+        backdropFilter: 'blur(18px)',
+        WebkitBackdropFilter: 'blur(18px)',
+        borderTop: '1px solid rgba(169, 190, 255, 0.08)',
+        paddingBottom: 'env(safe-area-inset-bottom)',
+        boxShadow: '0 -12px 32px rgba(2, 6, 23, 0.28)',
       }}
     >
-      {items.map(({ to, icon: Icon }) => (
-        <NavLink key={to} to={to}>
-          {({ isActive }) => (
-            <span
-              className="p-2 rounded-lg block transition-colors"
-              style={{ color: isActive ? 'var(--color-accent)' : 'var(--color-text-muted)' }}
-            >
-              <Icon size={22} />
-            </span>
-          )}
-        </NavLink>
-      ))}
+      <div className="mx-auto flex h-[var(--bottom-nav-height)] max-w-[640px] items-center justify-around gap-1 px-2">
+        {items.map(({ to, icon: Icon, label }) => (
+          <NavLink key={to} to={to} end={to === '/'}>
+            {({ isActive }) => (
+              <span
+                className="relative flex min-w-[64px] flex-col items-center justify-center gap-1 rounded-2xl px-3 py-2"
+                style={{
+                  color: isActive ? 'var(--color-text)' : 'var(--color-text-muted)',
+                  background: isActive ? 'linear-gradient(180deg, rgba(255,122,24,0.2), rgba(255,179,71,0.08))' : 'transparent',
+                  minHeight: '52px',
+                }}
+              >
+                <Icon
+                  size={20}
+                  strokeWidth={isActive ? 2.4 : 1.9}
+                  style={{
+                    color: isActive ? 'var(--color-accent)' : 'currentColor',
+                    filter: isActive ? 'drop-shadow(0 0 8px var(--color-accent-glow))' : undefined,
+                  }}
+                />
+                <span className="text-[10px] font-semibold tracking-[0.03em]">
+                  {label}
+                </span>
+                {isActive && (
+                  <span
+                    className="absolute top-1.5 h-1.5 w-1.5 rounded-full"
+                    style={{ background: 'var(--color-accent)' }}
+                  />
+                )}
+              </span>
+            )}
+          </NavLink>
+        ))}
+      </div>
     </nav>
   );
 }
