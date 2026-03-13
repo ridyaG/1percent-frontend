@@ -191,21 +191,21 @@ export const themes: Record<ThemeName, ThemeColors & {
     emoji: '🌃',
     description: 'Deep & focused',
 
-    bg: '#0A0F1A',
-    surface: '#111827',
+    bg: '#0B0F14',
+    surface: '#111111',
     border: '#1F2937',
 
     text: '#F1F5F9',
     textMuted: '#94A3B8',
 
-    accent: '#F97316',
+    accent: '#FF5C00',
     accentHover: '#FB923C',
     accentText: '#FFFFFF',
 
     accentBg: 'rgba(249, 115, 22, 0.14)',
     accentGradient: 'linear-gradient(135deg, #F97316 0%, #FDBA74 100%)',
 
-    card: '#172033',
+    card: '#000206',
     hover: 'rgba(249, 115, 22, 0.12)',
     active: 'rgba(249, 115, 22, 0.22)',
     subtle: 'rgba(55, 65, 81, 0.4)',
