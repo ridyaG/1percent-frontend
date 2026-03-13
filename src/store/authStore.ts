@@ -1,12 +1,5 @@
 import { create } from 'zustand';
-
-interface User {
-  id: string;
-  username: string;
-  displayName: string;
-  avatarUrl?: string;
-  currentStreak?: number;
-}
+import type { User } from '../types/user';
 
 interface AuthState {
   user: User | null;
@@ -37,4 +30,3 @@ export const useAuthStore = create<AuthState>((set) => ({
     set({ user });
   },
 }));
- 
