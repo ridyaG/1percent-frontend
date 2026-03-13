@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Search, TrendingUp, Hash, X, Compass, Sparkles } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import api from '../api/client';
 import PostCard from '../components/post/PostCard';
 import { getDefaultAvatar } from '../lib/utils';
@@ -25,18 +26,20 @@ function UserCard({ user }: { user: UserResult }) {
       className="card flex items-center gap-3 p-4"
       style={{ borderRadius: 'var(--radius-lg)', marginBottom: 8 }}
     >
-      <img
-        src={user.avatarUrl || getDefaultAvatar(user.username)}
-        className="avatar avatar-lg"
-        alt=""
-      />
+      <Link to={`/profile/${user.username}`}>
+        <img
+          src={user.avatarUrl || getDefaultAvatar(user.username)}
+          className="avatar avatar-lg"
+          alt=""
+        />
+      </Link>
       <div className="flex-1 min-w-0">
-        <div className="font-semibold text-sm" style={{ color: 'var(--color-text)', fontFamily: "'Syne', sans-serif" }}>
+        <Link to={`/profile/${user.username}`} className="font-semibold text-sm" style={{ color: 'var(--color-text)', fontFamily: "'Syne', sans-serif" }}>
           {user.displayName}
           <span className="font-normal ml-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
             @{user.username}
           </span>
-        </div>
+        </Link>
         {user.bio && (
           <div className="text-xs mt-0.5 truncate" style={{ color: 'var(--color-text-muted)' }}>
             {user.bio}

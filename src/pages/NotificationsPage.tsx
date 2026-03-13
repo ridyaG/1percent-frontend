@@ -4,7 +4,7 @@ import { notificationsApi } from '../api/notifications';
 import { getDefaultAvatar } from '../lib/utils';
 import { NOTIFICATION_ICONS } from '../lib/constants';
 import type { Notification } from '../types/notification';
-import { CheckCheck } from 'lucide-react';
+import { CheckCheck, Bell, Sparkles } from 'lucide-react';
 
 function NotifItem({ notif, onRead }: { notif: Notification; onRead: (id: string) => void }) {
   const actor = notif.actor;
@@ -17,6 +17,7 @@ function NotifItem({ notif, onRead }: { notif: Notification; onRead: (id: string
     reply:            'replied to your comment',
     follow:           'started following you',
     follow_request:   'sent you a follow request',
+    message:          'sent you a message',
     mention:          'mentioned you in a post',
     streak_milestone: 'reached a streak milestone!',
     streak_reminder:  "don't forget to post today!",
@@ -30,18 +31,18 @@ function NotifItem({ notif, onRead }: { notif: Notification; onRead: (id: string
       onClick={() => !notif.isRead && onRead(notif.id)}
       className="flex items-start gap-3 px-5 py-4 transition-colors cursor-pointer"
       style={{
-        background: notif.isRead ? 'transparent' : 'var(--color-accent-bg)',
+        background: notif.isRead ? 'transparent' : 'color-mix(in srgb, var(--color-accent-bg) 72%, var(--color-surface) 28%)',
         borderBottom: '1px solid var(--color-border)',
       }}
       onMouseEnter={e => {
         (e.currentTarget as HTMLElement).style.background = notif.isRead
           ? 'var(--color-hover)'
-          : 'rgba(255,92,0,0.16)';
+          : 'color-mix(in srgb, var(--color-accent-bg) 82%, var(--color-surface) 18%)';
       }}
       onMouseLeave={e => {
         (e.currentTarget as HTMLElement).style.background = notif.isRead
           ? 'transparent'
-          : 'var(--color-accent-bg)';
+          : 'color-mix(in srgb, var(--color-accent-bg) 72%, var(--color-surface) 28%)';
       }}
     >
       {actor ? (
@@ -125,64 +126,189 @@ export default function NotificationsPage() {
   const unreadCount = notifications.filter(n => !n.isRead).length;
 
   return (
-    <div className="max-w-2xl mx-auto">
-      {/* ── Sticky header ── */}
+    <div className="page-container relative">
       <div
-        className="flex items-center justify-between px-5 py-4 sticky top-[60px] z-10"
-        style={{
-          background: 'color-mix(in srgb, var(--color-bg) 90%, transparent)',
-          backdropFilter: 'blur(12px)',
-          borderBottom: '1px solid var(--color-border)',
-        }}
-      >
-        <div className="flex items-center gap-2.5">
-          <h2
-            className="font-bold text-lg"
-            style={{ fontFamily: "'Syne', sans-serif", color: 'var(--color-text)' }}
+        className="pointer-events-none absolute left-8 top-20 h-40 w-40 rounded-full blur-3xl animate-float-soft"
+        style={{ background: 'color-mix(in srgb, var(--color-accent) 14%, transparent)', opacity: 0.3 }}
+      />
+      <div
+        className="pointer-events-none absolute right-8 top-56 h-36 w-36 rounded-full blur-3xl animate-drift-sideways"
+        style={{ background: 'color-mix(in srgb, var(--color-secondary) 16%, transparent)', opacity: 0.18 }}
+      />
+
+      <section className="page-hero animate-fade-in relative z-10">
+        <div className="max-w-[760px]">
+          <div className="eyebrow mb-3">
+            <Sparkles size={14} />
+            Signal center
+          </div>
+          <h2 className="type-section mb-2">Stay close to the moments that need your attention.</h2>
+          <p className="section-copy">
+            Track replies, follows, mentions, and milestones in one place so you can respond without losing momentum.
+          </p>
+        </div>
+
+        <div className="mt-5 grid gap-3 sm:grid-cols-3">
+          <div
+            className="glass-panel rounded-[20px] px-4 py-4 min-w-0"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--color-border)' }}
           >
-            Notifications
-          </h2>
-          {unreadCount > 0 && (
-            <span
-              className="text-xs font-bold px-2 py-0.5 rounded-full"
-              style={{ background: 'var(--color-accent)', color: '#fff' }}
-            >
+            <div className="text-[11px] uppercase tracking-[0.18em]" style={{ color: 'var(--color-secondary)' }}>
+              Unread
+            </div>
+            <div className="mt-1 text-3xl font-bold" style={{ color: 'var(--color-text)', fontFamily: "'Syne', sans-serif" }}>
               {unreadCount}
-            </span>
+            </div>
+            <div className="mt-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              Waiting on your attention
+            </div>
+          </div>
+          <div
+            className="glass-panel rounded-[20px] px-4 py-4 min-w-0"
+            style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid var(--color-border)' }}
+          >
+            <div className="text-[11px] uppercase tracking-[0.18em]" style={{ color: 'var(--color-secondary)' }}>
+              Total
+            </div>
+            <div className="mt-1 text-3xl font-bold" style={{ color: 'var(--color-text)', fontFamily: "'Syne', sans-serif" }}>
+              {notifications.length}
+            </div>
+            <div className="mt-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              In your activity stream
+            </div>
+          </div>
+          <div
+            className="glass-panel rounded-[20px] px-4 py-4 min-w-0"
+            style={{
+              background:
+                'linear-gradient(135deg, color-mix(in srgb, var(--color-surface) 80%, white 20%), color-mix(in srgb, var(--color-accent-bg) 40%, var(--color-surface) 60%))',
+              border: '1px solid var(--color-border)',
+            }}
+          >
+            <div className="text-[11px] uppercase tracking-[0.18em]" style={{ color: 'var(--color-secondary)' }}>
+              Status
+            </div>
+            <div className="mt-1 text-lg font-semibold" style={{ color: 'var(--color-text)' }}>
+              {unreadCount > 0 ? 'Action needed' : 'All clear'}
+            </div>
+            <div className="mt-1 text-xs" style={{ color: 'var(--color-text-muted)' }}>
+              {unreadCount > 0 ? 'You have unread activity to review.' : 'Nothing urgent is waiting right now.'}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <div
+        className="card overflow-hidden relative z-10 max-w-[980px] mx-auto"
+        style={{ borderRadius: 'calc(var(--radius-xl) + 4px)' }}
+      >
+        <div
+          className="flex items-center justify-between gap-3 px-5 py-4"
+          style={{
+            background: 'color-mix(in srgb, var(--color-surface) 90%, transparent)',
+            borderBottom: '1px solid var(--color-border)',
+          }}
+        >
+          <div className="flex items-center gap-2.5 min-w-0">
+            <div
+              className="flex h-11 w-11 items-center justify-center rounded-2xl"
+              style={{ background: 'var(--color-accent-bg)', color: 'var(--color-accent)' }}
+            >
+              <Bell size={18} />
+            </div>
+            <div>
+              <h2
+                className="section-title"
+                style={{ color: 'var(--color-text)' }}
+              >
+                Notifications
+              </h2>
+              <p className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                Your latest activity, replies, follows, and reminders.
+              </p>
+              <div className="mt-2 flex flex-wrap gap-2">
+                {['Replies', 'Mentions', 'Milestones'].map((chip) => (
+                  <span
+                    key={chip}
+                    className="rounded-full px-2.5 py-1 text-[11px] font-semibold uppercase tracking-[0.12em]"
+                    style={{
+                      background: 'color-mix(in srgb, var(--color-surface) 78%, white 22%)',
+                      color: 'var(--color-text-muted)',
+                      border: '1px solid var(--color-border)',
+                    }}
+                  >
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {unreadCount > 0 && (
+            <button
+              onClick={() => markAllRead()}
+              disabled={markingAll}
+              className="btn btn-ghost text-sm"
+            >
+              <CheckCheck size={15} />
+              {markingAll ? 'Marking...' : 'Mark all read'}
+            </button>
           )}
         </div>
 
-        {unreadCount > 0 && (
-          <button
-            onClick={() => markAllRead()}
-            disabled={markingAll}
-            className="flex items-center gap-1.5 text-xs font-semibold transition-colors disabled:opacity-50"
-            style={{ color: 'var(--color-accent)' }}
-          >
-            <CheckCheck size={14} />
-            {markingAll ? 'Marking...' : 'Mark all read'}
-          </button>
+        {isLoading ? (
+          <NotifSkeleton />
+        ) : notifications.length === 0 ? (
+          <div className="p-5 md:p-6">
+            <div
+              className="empty-state"
+              style={{
+                minHeight: '220px',
+                maxWidth: '760px',
+                margin: '0 auto',
+                background:
+                  'radial-gradient(circle at top, color-mix(in srgb, var(--color-accent) 10%, transparent), transparent 24%), color-mix(in srgb, var(--color-surface) 92%, white 8%)',
+              }}
+            >
+              <div
+                className="mb-5 flex h-[72px] w-[72px] items-center justify-center rounded-[24px] animate-float-soft"
+                style={{
+                  background: 'var(--color-accent-bg)',
+                  color: 'var(--color-accent)',
+                  boxShadow: '0 0 0 10px color-mix(in srgb, var(--color-accent) 8%, transparent)',
+                }}
+              >
+                <Bell size={30} />
+              </div>
+              <div className="empty-state-title">No notifications yet</div>
+              <div className="empty-state-desc">
+                Interact with the community to start seeing replies, follows, and milestone updates here.
+              </div>
+              <div className="mt-5 flex flex-wrap justify-center gap-2">
+                {['Replies', 'Mentions', 'Milestones'].map((chip) => (
+                  <span
+                    key={chip}
+                    className="rounded-full px-3 py-1.5 text-xs font-semibold"
+                    style={{
+                      background: 'color-mix(in srgb, var(--color-surface) 78%, white 22%)',
+                      color: 'var(--color-text-muted)',
+                      border: '1px solid var(--color-border)',
+                    }}
+                  >
+                    {chip}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div>
+            {notifications.map((n) => (
+              <NotifItem key={n.id} notif={n} onRead={markRead} />
+            ))}
+          </div>
         )}
       </div>
-
-      {/* ── Content ── */}
-      {isLoading ? (
-        <NotifSkeleton />
-      ) : notifications.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">🔔</div>
-          <div className="empty-state-title">No notifications yet</div>
-          <div className="empty-state-desc">
-            Interact with the community to start seeing updates here.
-          </div>
-        </div>
-      ) : (
-        <div>
-          {notifications.map((n) => (
-            <NotifItem key={n.id} notif={n} onRead={markRead} />
-          ))}
-        </div>
-      )}
     </div>
   );
 }

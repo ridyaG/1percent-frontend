@@ -4,6 +4,7 @@ export type NotificationType =
   | 'reply'
   | 'follow'
   | 'follow_request'
+  | 'message'
   | 'mention'
   | 'streak_milestone'
   | 'streak_reminder'

@@ -23,4 +23,5 @@ export interface User {
     following: number;
   };
   isFollowing?: boolean;
+  followStatus?: 'accepted' | 'pending' | null;
 }

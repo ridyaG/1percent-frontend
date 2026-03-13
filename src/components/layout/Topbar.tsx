@@ -1,4 +1,4 @@
-import { Menu, Bell, Plus } from 'lucide-react';
+import { Menu, Bell, Plus, MessageCircle } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
 import { useAuthStore } from '../../store/authStore';
 import { getDefaultAvatar } from '../../lib/utils';
@@ -10,6 +10,7 @@ const PAGE_TITLES: Record<string, string> = {
   '/explore':       'Explore',
   '/streaks':       'Streaks',
   '/challenges':    'Challenges',
+  '/chat':          'Messages',
   '/notifications': 'Notifications',
   '/profile':       'Profile',
 };
@@ -95,6 +96,21 @@ export default function Topbar() {
               <Plus size={18} />
             </button>
           )}
+
+          <button
+            onClick={() => navigate('/chat')}
+            className="relative flex items-center justify-center rounded-xl transition-colors"
+            style={{
+              width: 'var(--tap-target)',
+              height: 'var(--tap-target)',
+              color: 'var(--color-text)',
+              background: location.pathname === '/chat' ? 'var(--color-accent-bg)' : 'rgba(255,255,255,0.04)',
+              border: '1px solid var(--color-border)',
+            }}
+            aria-label="Messages"
+          >
+            <MessageCircle size={18} />
+          </button>
 
           <button
             onClick={() => navigate('/notifications')}

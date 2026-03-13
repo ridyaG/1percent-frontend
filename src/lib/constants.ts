@@ -18,6 +18,7 @@ export const NOTIFICATION_ICONS: Record<string, string> = {
   reply:            '↩️',
   follow:           '👤',
   follow_request:   '🤝',
+  message:          '💬',
   mention:          '@',
   streak_milestone: '🔥',
   streak_reminder:  '⏰',

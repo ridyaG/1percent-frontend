@@ -1,5 +1,5 @@
 import { NavLink, useNavigate } from 'react-router-dom';
-import { Home, Search, Flame, Trophy, Bell, User, LogOut, Plus } from 'lucide-react';
+import { Home, Search, Flame, Trophy, Bell, User, LogOut, Plus, MessageCircle } from 'lucide-react';
 import { useAuthStore } from '../../store/authStore';
 import { useUIStore } from '../../store/uiStore';
 import { authApi } from '../../api/auth';
@@ -10,6 +10,7 @@ const navItems = [
   { to: '/explore',      icon: Search,  label: 'Explore' },
   { to: '/streaks',      icon: Flame,   label: 'Streaks' },
   { to: '/challenges',   icon: Trophy,  label: 'Challenges' },
+  { to: '/chat',         icon: MessageCircle, label: 'Messages' },
   { to: '/notifications',icon: Bell,    label: 'Alerts' },
   { to: '/profile',      icon: User,    label: 'Profile' },
 ];

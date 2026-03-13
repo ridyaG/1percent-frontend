@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Heart, MessageCircle, Share2, Bookmark } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
+import { Link } from 'react-router-dom';
 import { useLike } from '../../hooks/useLike';
 import StreakBadge from '../profile/StreakBadge';
 import CommentSection from './CommentSection';
@@ -69,25 +70,29 @@ export default function PostCard({ post }: { post: Post }) {
         style={{ borderRadius: 'var(--radius-xl)' }}
       >
         <div className="flex items-start gap-3 mb-3">
-          <img
-            src={author.avatarUrl || getDefaultAvatar(author.username)}
-            className="avatar avatar-md mt-0.5"
-            alt={author.displayName}
-            onError={(e) => {
-              (e.target as HTMLImageElement).src = getDefaultAvatar(author.username);
-            }}
-          />
+          <Link to={`/profile/${author.username}`}>
+            <img
+              src={author.avatarUrl || getDefaultAvatar(author.username)}
+              className="avatar avatar-md mt-0.5"
+              alt={author.displayName}
+              onError={(e) => {
+                (e.target as HTMLImageElement).src = getDefaultAvatar(author.username);
+              }}
+            />
+          </Link>
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-1.5 flex-wrap">
-              <span
-                className="font-semibold text-sm"
-                style={{ color: 'var(--color-text)', fontFamily: "'Syne', sans-serif" }}
-              >
-                {author.displayName}
-              </span>
-              <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
-                @{author.username}
-              </span>
+              <Link to={`/profile/${author.username}`} className="flex items-center gap-1.5 flex-wrap min-w-0">
+                <span
+                  className="font-semibold text-sm"
+                  style={{ color: 'var(--color-text)', fontFamily: "'Syne', sans-serif" }}
+                >
+                  {author.displayName}
+                </span>
+                <span className="text-sm" style={{ color: 'var(--color-text-muted)' }}>
+                  @{author.username}
+                </span>
+              </Link>
             </div>
             <div className="text-xs mt-0.5" style={{ color: 'var(--color-text-subtle)' }}>
               {time}

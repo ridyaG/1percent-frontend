@@ -6,6 +6,7 @@ import { useAuthStore } from '../store/authStore';
 import { getDefaultAvatar } from '../lib/utils';
 import type { Post } from '../types/post';
 import { Flame, Pencil } from 'lucide-react';
+import FeedMotionBackground from '../components/FeedMotionBackground';
 
 function FeedSkeleton() {
   return (
@@ -56,7 +57,9 @@ export default function FeedPage() {
   const streak = user?.currentStreak || 0;
 
   return (
-    <div className="page-container">
+    <div className="page-container feed-stage">
+      <FeedMotionBackground />
+
       <section className="page-hero animate-fade-in">
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
