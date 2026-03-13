@@ -1,10 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { MessageCircle, Send } from 'lucide-react';
+import { ArrowLeft, MessageCircle, Send } from 'lucide-react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { chatApi, type Conversation, type DirectMessage } from '../api/chat';
 import { useAuthStore } from '../store/authStore';
 import { useSocket } from '../hooks/useSocket';
+import { useIsMobile } from '../hooks/useMediaQuery';
 import { getDefaultAvatar } from '../lib/utils';
 import { formatDistanceToNow } from 'date-fns';
 
@@ -13,6 +14,7 @@ export default function ChatPage() {
   const socketRef = useSocket();
   const qc = useQueryClient();
   const navigate = useNavigate();
+  const isMobile = useIsMobile();
   const [searchParams, setSearchParams] = useSearchParams();
   const [draft, setDraft] = useState('');
   const bottomRef = useRef<HTMLDivElement>(null);
@@ -60,9 +62,12 @@ export default function ChatPage() {
 
   const activeConversation = conversations.find(conversation => conversation.id === activeId) ?? null;
   const activeRecipient = activeConversation ? getOtherParticipant(activeConversation) : null;
+  const showConversationList = !isMobile || !activeConversation;
+  const showConversationThread = !isMobile || !!activeConversation;
 
   return (
     <div className="mx-auto flex min-h-[calc(100vh-var(--topbar-height))] max-w-6xl flex-col md:flex-row">
+      {showConversationList && (
       <aside
         className="w-full md:w-[320px] md:border-r"
         style={{ borderColor: 'var(--color-border)', background: 'var(--gradient-surface)' }}
@@ -119,7 +124,9 @@ export default function ChatPage() {
           )}
         </div>
       </aside>
+      )}
 
+      {showConversationThread && (
       <section className="flex min-h-[50vh] flex-1 flex-col">
         {activeId && activeConversation ? (
           <>
@@ -127,6 +134,16 @@ export default function ChatPage() {
               className="flex items-center gap-3 px-5 py-4"
               style={{ borderBottom: '1px solid var(--color-border)', background: 'rgba(255,255,255,0.02)' }}
             >
+              {isMobile && (
+                <button
+                  onClick={() => setSearchParams({}, { replace: true })}
+                  className="flex h-9 w-9 items-center justify-center rounded-full"
+                  style={{ border: '1px solid var(--color-border)', color: 'var(--color-text)' }}
+                  aria-label="Back to conversations"
+                >
+                  <ArrowLeft size={16} />
+                </button>
+              )}
               <img
                 src={activeRecipient?.avatarUrl || getDefaultAvatar(activeRecipient?.username || 'user')}
                 className="h-10 w-10 rounded-full object-cover"
@@ -164,6 +181,12 @@ export default function ChatPage() {
                       }}
                     >
                       {message.content}
+                      <div
+                        className="mt-1 text-[11px]"
+                        style={{ color: isOwnMessage ? 'rgba(255,255,255,0.78)' : 'var(--color-text-subtle)' }}
+                      >
+                        {formatDistanceToNow(new Date(message.createdAt), { addSuffix: true })}
+                      </div>
                     </div>
                   </div>
                 );
@@ -210,6 +233,7 @@ export default function ChatPage() {
           </div>
         )}
       </section>
+      )}
     </div>
   );
 }

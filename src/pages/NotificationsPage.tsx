@@ -115,12 +115,18 @@ export default function NotificationsPage() {
 
   const { mutate: markRead } = useMutation({
     mutationFn: notificationsApi.markRead,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['notifications'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['notifications'] });
+      qc.invalidateQueries({ queryKey: ['notifications-unread-count'] });
+    },
   });
 
   const { mutate: markAllRead, isPending: markingAll } = useMutation({
     mutationFn: notificationsApi.markAllRead,
-    onSuccess: () => qc.invalidateQueries({ queryKey: ['notifications'] }),
+    onSuccess: () => {
+      qc.invalidateQueries({ queryKey: ['notifications'] });
+      qc.invalidateQueries({ queryKey: ['notifications-unread-count'] });
+    },
   });
 
   const unreadCount = notifications.filter(n => !n.isRead).length;

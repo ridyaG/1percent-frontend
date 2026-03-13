@@ -73,6 +73,7 @@ export function useSocket() {
 
       sharedSocket.on('notification', (notif: Notification) => {
         queryClient.invalidateQueries({ queryKey: ['notifications'] });
+        queryClient.invalidateQueries({ queryKey: ['notifications-unread-count'] });
         if (notif.type !== 'message') {
           toast(`${notif.actor?.displayName || ''} ${notif.type}`, { icon: '🔔' });
         }
