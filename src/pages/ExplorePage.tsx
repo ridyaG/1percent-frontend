@@ -1,12 +1,14 @@
 import { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
-import { Search, TrendingUp, Hash, X, Compass, Sparkles } from 'lucide-react';
-import { Link } from 'react-router-dom';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import { Search, TrendingUp, Hash, X, Compass, Sparkles, MessageCircle } from 'lucide-react';
+import { Link, useNavigate } from 'react-router-dom';
 import api from '../api/client';
+import { chatApi } from '../api/chat';
 import PostCard from '../components/post/PostCard';
 import { getDefaultAvatar } from '../lib/utils';
 import type { Post } from '../types/post';
 import StreakBadge from '../components/profile/StreakBadge';
+import toast from 'react-hot-toast';
 
 interface UserResult {
   id: string; username: string; displayName: string;
@@ -21,6 +23,17 @@ const searchApi = {
 };
 
 function UserCard({ user }: { user: UserResult }) {
+  const navigate = useNavigate();
+  const qc = useQueryClient();
+  const { mutate: startChat, isPending } = useMutation({
+    mutationFn: () => chatApi.createOrGetConversation(user.id),
+    onSuccess: conversation => {
+      qc.invalidateQueries({ queryKey: ['conversations'] });
+      navigate(`/chat?conversationId=${conversation.id}`);
+    },
+    onError: () => toast.error('Could not start chat'),
+  });
+
   return (
     <div
       className="card flex items-center gap-3 p-4"
@@ -47,6 +60,19 @@ function UserCard({ user }: { user: UserResult }) {
         )}
       </div>
       <StreakBadge streak={user.currentStreak} />
+      <button
+        onClick={() => startChat()}
+        disabled={isPending}
+        className="inline-flex items-center gap-1.5 rounded-full px-3 py-2 text-xs font-semibold disabled:opacity-50"
+        style={{
+          background: 'var(--color-accent-bg)',
+          color: 'var(--color-accent)',
+          border: '1px solid var(--color-border)',
+        }}
+      >
+        <MessageCircle size={13} />
+        {isPending ? 'Opening...' : 'Message'}
+      </button>
     </div>
   );
 }

@@ -12,6 +12,7 @@ import NotificationsPage from './pages/NotificationsPage';
 import StreaksPage from './pages/StreaksPage';
 import ChallengesPage from './pages/ChallengesPage';
 import ChatPage from './pages/ChatPage';
+import ChatErrorBoundary from './components/chat/ChatErrorBoundary';
 import { useThemeStore } from './store/themeStore';
 import { useAuthStore } from './store/authStore';
 
@@ -53,7 +54,7 @@ export default function App() {
             <Route path="explore" element={<ExplorePage />} />
             <Route path="streaks" element={<StreaksPage />} />
             <Route path="challenges" element={<ChallengesPage />} />
-            <Route path="chat" element={<ChatPage />} />
+            <Route path="chat" element={<ChatErrorBoundary><ChatPage /></ChatErrorBoundary>} />
             <Route path="notifications" element={<NotificationsPage />} />
             <Route path="profile" element={<ProfilePage />} />
             <Route path="profile/:username" element={<ProfilePage />} />
