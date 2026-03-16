@@ -6,6 +6,7 @@ import { useAuthStore } from '../store/authStore';
 import { usersApi, type UpdateProfilePayload } from '../api/users';
 import { chatApi } from '../api/chat';
 import { postsApi } from '../api/posts';
+import { getApiErrorMessage } from '../api/errors';
 import { getDefaultAvatar, getStreakBadgeClass, getStreakLabel } from '../lib/utils';
 import PostCard from '../components/post/PostCard';
 import StreakBadge from '../components/profile/StreakBadge';
@@ -13,6 +14,10 @@ import { FOCUS_AREAS } from '../lib/constants';
 import toast from 'react-hot-toast';
 import type { Post } from '../types/post';
 import type { User } from '../types/user';
+
+type ProfileUser = User & {
+  followStatus?: 'accepted' | 'pending' | null;
+};
 
 // ── Edit Profile Modal ──────────────────────────────────────────────
 function EditProfileModal({ user, onClose }: { user: User; onClose: () => void }) {
@@ -36,7 +41,7 @@ function EditProfileModal({ user, onClose }: { user: User; onClose: () => void }
       toast.success('Profile updated ✓');
       onClose();
     },
-    onError: () => toast.error('Failed to update profile'),
+    onError: (error) => toast.error(getApiErrorMessage(error, { fallback: 'Failed to update profile.', action: 'save your profile' })),
   });
 
   const update = (key: keyof UpdateProfilePayload) =>
@@ -262,7 +267,7 @@ export default function ProfilePage() {
   const targetUsername = username || authUser?.username;
   const isOwnProfile = !username || username === authUser?.username;
 
-  const { data: profile } = useQuery<User>({
+  const { data: profile } = useQuery<ProfileUser>({
     queryKey: ['profile', targetUsername],
     queryFn: () => usersApi.getProfile(targetUsername!),
     enabled: !!targetUsername,
@@ -282,7 +287,7 @@ export default function ProfilePage() {
       qc.invalidateQueries({ queryKey: ['profile', targetUsername] });
       toast.success(profile?.isPrivate ? 'Follow request sent' : 'Following!');
     },
-    onError: () => toast.error('Could not follow'),
+    onError: (error) => toast.error(getApiErrorMessage(error, { fallback: 'Could not follow this user.', action: 'follow this user' })),
   });
 
   const { mutate: unfollow, isPending: isUnfollowingPending } = useMutation({
@@ -291,7 +296,7 @@ export default function ProfilePage() {
       qc.invalidateQueries({ queryKey: ['profile', targetUsername] });
       toast.success('Unfollowed');
     },
-    onError: () => toast.error('Could not unfollow'),
+    onError: (error) => toast.error(getApiErrorMessage(error, { fallback: 'Could not unfollow this user.', action: 'unfollow this user' })),
   });
 
   const { mutate: startChat, isPending: isStartingChat } = useMutation({
@@ -300,7 +305,7 @@ export default function ProfilePage() {
       qc.invalidateQueries({ queryKey: ['conversations'] });
       navigate(`/chat?conversationId=${conversation.id}`);
     },
-    onError: () => toast.error('Could not open chat'),
+    onError: (error) => toast.error(getApiErrorMessage(error, { fallback: 'Could not open chat.', action: 'start the chat' })),
   });
 
   const user = profile || (isOwnProfile ? authUser : null);

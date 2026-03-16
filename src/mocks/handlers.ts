@@ -34,6 +34,17 @@ export const handlers = [
     });
   }),
 
+  http.get('/api/v1/posts/feed/community', () => {
+    return HttpResponse.json({
+      success: true,
+      data: {
+        posts: [mockPost],
+        nextCursor: null,
+        hasMore: false,
+      },
+    });
+  }),
+
   http.post('/api/v1/posts/:id/like', () => {
     return HttpResponse.json({
       success: true,

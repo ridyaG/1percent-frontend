@@ -19,8 +19,19 @@ export default function AppShell() {
       style={{ background: 'transparent', color: 'var(--color-text)' }}
     >
       <div
+        className="pointer-events-none absolute inset-0"
+        aria-hidden="true"
+        style={{
+          background: `
+            radial-gradient(circle at 16% 10%, rgba(93, 214, 192, 0.1), transparent 24%),
+            radial-gradient(circle at 84% 0%, rgba(255, 122, 24, 0.14), transparent 26%),
+            radial-gradient(circle at 50% 100%, rgba(255, 191, 71, 0.08), transparent 24%)
+          `,
+        }}
+      />
+      <div
         className="fixed inset-0 pointer-events-none"
-        style={{ zIndex: 0, opacity: 0.24 }}
+        style={{ zIndex: 0, opacity: 0.14 }}
         aria-hidden="true"
       >
         <FireCanvas sparkFreq={1} floorFrac={0.04} />

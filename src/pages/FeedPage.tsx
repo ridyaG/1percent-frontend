@@ -1,11 +1,11 @@
-import { useEffect, useRef } from 'react';
-import { useHomeFeed } from '../hooks/useFeed';
+import { useEffect, useRef, useState } from 'react';
+import { useCommunityFeed, useHomeFeed } from '../hooks/useFeed';
 import PostCard from '../components/post/PostCard';
 import { useUIStore } from '../store/uiStore';
 import { useAuthStore } from '../store/authStore';
 import { getDefaultAvatar } from '../lib/utils';
 import type { Post } from '../types/post';
-import { Flame, Pencil } from 'lucide-react';
+import { Compass, Flame, Pencil, Users } from 'lucide-react';
 import FeedMotionBackground from '../components/FeedMotionBackground';
 
 function FeedSkeleton() {
@@ -34,10 +34,15 @@ function FeedSkeleton() {
 }
 
 export default function FeedPage() {
-  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = useHomeFeed();
+  const [feedMode, setFeedMode] = useState<'home' | 'community'>('home');
+  const homeFeed = useHomeFeed(feedMode === 'home');
+  const communityFeed = useCommunityFeed(feedMode === 'community');
   const openCompose = useUIStore((s) => s.openCompose);
   const user        = useAuthStore((s) => s.user);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+
+  const selectedFeed = feedMode === 'home' ? homeFeed : communityFeed;
+  const { data, isLoading, fetchNextPage, hasNextPage, isFetchingNextPage } = selectedFeed;
 
   const posts: Post[] =
     data?.pages.flatMap((page: unknown) => (page as { posts?: Post[] }).posts || []) ?? [];
@@ -55,6 +60,7 @@ export default function FeedPage() {
 
   const avatar = user?.avatarUrl || getDefaultAvatar(user?.username || 'user');
   const streak = user?.currentStreak || 0;
+  const isCommunity = feedMode === 'community';
 
   return (
     <div className="page-container feed-stage">
@@ -64,12 +70,16 @@ export default function FeedPage() {
         <div className="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <div className="eyebrow mb-3">
-              <Flame size={14} />
-              Daily momentum
+              {isCommunity ? <Users size={14} /> : <Flame size={14} />}
+              {isCommunity ? 'Community pulse' : 'Daily momentum'}
             </div>
-            <h2 className="type-section mb-2">Keep your momentum visible.</h2>
+            <h2 className="type-section mb-2">
+              {isCommunity ? 'See what the wider community is building.' : 'Keep your momentum visible.'}
+            </h2>
             <p className="section-copy">
-              Share small wins, track consistency, and make progress feel rewarding every time you open the feed.
+              {isCommunity
+                ? 'Discover public posts from people outside your current circle and find new creators, habits, and challenges to follow.'
+                : 'Share small wins, track consistency, and make progress feel rewarding every time you open the feed.'}
             </p>
           </div>
 
@@ -77,17 +87,44 @@ export default function FeedPage() {
             <img src={avatar} className="avatar avatar-md" alt="" />
             <div>
               <div className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--color-secondary)' }}>
-                Today&apos;s check-in
+                {isCommunity ? 'Discover mode' : "Today&apos;s check-in"}
               </div>
               <div className="text-sm font-semibold" style={{ color: 'var(--color-text)' }}>
-                One small improvement counts.
+                {isCommunity ? 'Fresh voices, public progress, new momentum.' : 'One small improvement counts.'}
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {streak > 0 && (
+      <div
+        className="mb-4 flex gap-1 rounded-2xl p-1.5"
+        style={{ background: 'color-mix(in srgb, var(--color-surface) 88%, transparent)', border: '1px solid var(--color-border)' }}
+      >
+        {[
+          { key: 'home', label: 'Following', icon: Flame },
+          { key: 'community', label: 'Community', icon: Compass },
+        ].map(({ key, label, icon: Icon }) => {
+          const active = feedMode === key;
+          return (
+            <button
+              key={key}
+              onClick={() => setFeedMode(key as 'home' | 'community')}
+              className="flex flex-1 items-center justify-center gap-2 rounded-xl px-4 py-3 text-sm font-semibold transition-all"
+              style={{
+                background: active ? 'var(--gradient-brand)' : 'transparent',
+                color: active ? '#fff' : 'var(--color-text-muted)',
+                boxShadow: active ? '0 10px 20px rgba(255,122,24,0.16)' : 'none',
+              }}
+            >
+              <Icon size={14} />
+              {label}
+            </button>
+          );
+        })}
+      </div>
+
+      {streak > 0 && !isCommunity && (
         <div
         className="mb-4 flex items-center gap-3 rounded-2xl px-4 py-4"
         style={{
@@ -120,13 +157,13 @@ export default function FeedPage() {
         <img src={avatar} className="avatar avatar-md" alt="" />
         <div className="flex-1">
           <div className="text-xs uppercase tracking-[0.18em]" style={{ color: 'var(--color-secondary)' }}>
-            Share a win
+            {isCommunity ? 'Add your voice' : 'Share a win'}
           </div>
           <span
             className="block text-sm"
             style={{ color: 'var(--color-text-subtle)' }}
           >
-            What did you improve today?
+            {isCommunity ? 'Post something the community can learn from.' : 'What did you improve today?'}
           </span>
         </div>
         <span
@@ -141,13 +178,15 @@ export default function FeedPage() {
         <FeedSkeleton />
       ) : posts.length === 0 ? (
         <div className="empty-state">
-          <div className="empty-state-icon">✍️</div>
-          <div className="empty-state-title">Your feed is empty</div>
+          <div className="empty-state-icon">{isCommunity ? '🌍' : '✍️'}</div>
+          <div className="empty-state-title">{isCommunity ? 'No community posts yet' : 'Your feed is empty'}</div>
           <div className="empty-state-desc mb-4">
-            Follow people or share your first win to get started!
+            {isCommunity
+              ? 'Public posts from the wider community will show up here as people share their progress.'
+              : 'Follow people or share your first win to get started!'}
           </div>
           <button onClick={openCompose} className="btn btn-primary">
-            Create Your First Post 🔥
+            {isCommunity ? 'Share Something Public' : 'Create Your First Post 🔥'}
           </button>
         </div>
       ) : (

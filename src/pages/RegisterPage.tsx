@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { authApi } from '../api/auth';
+import { getApiErrorMessage } from '../api/errors';
 import { useAuthStore } from '../store/authStore';
 import { Eye, EyeOff, ArrowRight, Flame, Check } from 'lucide-react';
 
@@ -54,8 +55,7 @@ export default function RegisterPage() {
       login(data.user, data.accessToken, data.refreshToken);
       navigate('/');
     } catch (err: unknown) {
-      const e = err as { response?: { data?: { error?: string } } };
-      setError(e.response?.data?.error || 'Registration failed. Please try again.');
+      setError(getApiErrorMessage(err, { fallback: 'Registration failed. Please try again.', action: 'create your account' }));
     } finally {
       setLoading(false);
     }
@@ -76,7 +76,7 @@ export default function RegisterPage() {
         className="pointer-events-none fixed inset-0"
         style={{
           background:
-            'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(255,122,24,0.1) 0%, transparent 70%)',
+            'radial-gradient(ellipse 60% 40% at 50% 0%, rgba(255,122,24,0.12) 0%, transparent 70%), radial-gradient(circle at 88% 16%, rgba(93,214,192,0.12), transparent 24%)',
         }}
       />
 
@@ -101,7 +101,7 @@ export default function RegisterPage() {
             </div>
           </div>
 
-          <div className="w-full max-w-sm justify-self-center">
+          <div className="w-full max-w-[28rem] justify-self-center">
             <div className="text-center mb-8">
               <div
                 className="inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-4"
@@ -127,11 +127,12 @@ export default function RegisterPage() {
             </div>
 
             <div
-              className="rounded-2xl p-7"
+              className="rounded-[28px] p-7"
               style={{
-                background: 'var(--gradient-surface)',
+                background:
+                  'radial-gradient(circle at top right, color-mix(in srgb, var(--color-accent) 12%, transparent), transparent 30%), var(--gradient-surface)',
                 border: '1px solid var(--color-border)',
-                boxShadow: 'var(--shadow-lg)',
+                boxShadow: '0 28px 56px rgba(2, 6, 23, 0.22)',
                 backdropFilter: 'blur(16px)',
               }}
             >

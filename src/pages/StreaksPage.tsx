@@ -136,6 +136,29 @@ export default function StreaksPage() {
 
   return (
     <div className="page-container">
+      <section className="page-hero animate-fade-in">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <div className="eyebrow mb-3">
+              <TrendingUp size={14} />
+              Consistency
+            </div>
+            <h2 className="type-section mb-2">Momentum compounds when you keep showing up.</h2>
+            <p className="section-copy">
+              Track your current streak, celebrate your best run, and see who is building the strongest rhythm in the community.
+            </p>
+          </div>
+          <div className="glass-panel self-start px-4 py-3 sm:self-auto">
+            <div className="text-[11px] font-semibold uppercase tracking-[0.2em]" style={{ color: 'var(--color-secondary)' }}>
+              Current run
+            </div>
+            <div className="mt-1 text-2xl font-bold" style={{ color: 'var(--color-text)', fontFamily: "'Syne', sans-serif" }}>
+              {streak} day{streak !== 1 ? 's' : ''}
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* ── Top stats ── */}
       <div className="grid md:grid-cols-2 gap-4 mb-6">
         <CompoundCard />
